@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Contacts</string>
+    <string name="empty_contacts">There aren\'t any contacts</string>
+    <string name="error_loading_contacts">There was a problem loading the contacs</string>
+    <string name="dialog_action_ok">OK</string>
+    <string name="dialog_error_title">Sorry</string>
+    <string name="title_activity_contact_details">ContactDetails</string>
+</resources>
