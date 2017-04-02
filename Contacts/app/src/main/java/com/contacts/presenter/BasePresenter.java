@@ -24,7 +24,7 @@ public class BasePresenter<T extends MvpView> implements Presenter<T> {
         onUnsubscribe();
     }
 
-    public void addSubscription(Observable observable, Subscriber subscriber) {
+    protected void addSubscription(Observable observable, Subscriber subscriber) {
         if (mCompositeSubscription == null) {
             mCompositeSubscription = new CompositeSubscription();
         }
@@ -34,7 +34,7 @@ public class BasePresenter<T extends MvpView> implements Presenter<T> {
                 .subscribe(subscriber));
     }
 
-    public void onUnsubscribe() {
+    private void onUnsubscribe() {
         if (mCompositeSubscription != null && mCompositeSubscription.hasSubscriptions()) {
             mCompositeSubscription.unsubscribe();
         }

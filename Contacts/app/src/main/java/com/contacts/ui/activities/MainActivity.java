@@ -2,6 +2,7 @@ package com.contacts.ui.activities;
 
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Toast;
@@ -30,7 +31,10 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @Inject
     ContactsAdapter mContactsAdapter;
 
-    private List<Contact> mContacts;
+    List<Contact> mContacts;
+
+    @BindView(R.id.swipe_refresh)
+    SwipeRefreshLayout mSwipeRefresh;
 
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
@@ -48,6 +52,14 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
         mMainPresenter.attachView(this);
         mMainPresenter.loadContacts(savedInstanceState);
+
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mContactsAdapter.clear();
+                mMainPresenter.loadContactsApi();
+            }
+        });
     }
 
     @Override
@@ -66,6 +78,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showContacts(List<Contact> contacts) {
+        mSwipeRefresh.setRefreshing(false);
         mContacts = contacts;
         mContactsAdapter.setContacts(contacts);
         mContactsAdapter.notifyDataSetChanged();
@@ -73,6 +86,7 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showContactsEmpty() {
+        mSwipeRefresh.setRefreshing(false);
         mContactsAdapter.clear();
         mContactsAdapter.notifyDataSetChanged();
         Toast.makeText(this, R.string.empty_contacts, Toast.LENGTH_LONG).show();
@@ -80,9 +94,8 @@ public class MainActivity extends BaseActivity implements MainMvpView {
 
     @Override
     public void showError() {
+        mSwipeRefresh.setRefreshing(false);
         DialogFactory.createGenericErrorDialog(this, getString(R.string.error_loading_contacts))
                 .show();
     }
-
-
 }

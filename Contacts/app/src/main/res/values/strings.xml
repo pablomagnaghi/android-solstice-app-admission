@@ -4,5 +4,16 @@
     <string name="error_loading_contacts">There was a problem loading the contacs</string>
     <string name="dialog_action_ok">OK</string>
     <string name="dialog_error_title">Sorry</string>
-    <string name="title_activity_contact_details">ContactDetails</string>
+    <string name="title_activity_contact_details">Contact Details</string>
+    <string name="user_name_label">Name:</string>
+    <string name="company_label">Company:</string>
+    <string name="phone_label">Phone:</string>
+    <string name="mobile_phone_label">Mobile</string>
+    <string name="work_phone_label">Work</string>
+    <string name="home_phone_label">Home</string>
+    <string name="address_label">Address:</string>
+    <string name="birthday_label">Birthday:</string>
+    <string name="email_label">Email:</string>
+    <string name="website_label">Website:</string>
+    <string name="error_loading_contact_details">There was a problem loading the contac details</string>
 </resources>

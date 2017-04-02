@@ -1,6 +1,7 @@
 package com.contacts.injection.components;
 
 import com.contacts.injection.modules.ApplicationModule;
+import com.contacts.ui.activities.ContactDetailsActivity;
 import com.contacts.ui.activities.MainActivity;
 
 import javax.inject.Singleton;
@@ -12,4 +13,5 @@ import dagger.Component;
 public interface ApplicationComponent {
 
     void inject(MainActivity mainActivity);
+    void inject(ContactDetailsActivity contactDetailsActivity);
 }

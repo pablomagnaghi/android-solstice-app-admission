@@ -39,32 +39,34 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
                 getMvpView().showContacts(mContacts);
             }
         } else {
-            Observable<List<Contact>> contactsObservable = mApiClient.getClient().create(ApiInterface.class).getContacts();
-
-            addSubscription(contactsObservable, new Subscriber<List<Contact>>() {
-                @Override
-                public void onCompleted() {
-
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    if (isViewAttached()) {
-                        getMvpView().showError();
-                    }
-                }
-
-                @Override
-                public void onNext(List<Contact> contacts) {
-                    if (contacts.isEmpty()) {
-                        getMvpView().showContactsEmpty();
-                    } else {
-                        getMvpView().showContacts(contacts);
-                    }
-
-                }
-            });
+            loadContactsApi();
         }
+    }
+
+    public void loadContactsApi() {
+        Observable<List<Contact>> contactsObservable = mApiClient.getClient().create(ApiInterface.class).getContacts();
+
+        addSubscription(contactsObservable, new Subscriber<List<Contact>>() {
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                getMvpView().showError();
+            }
+
+            @Override
+            public void onNext(List<Contact> contacts) {
+                if (contacts.isEmpty()) {
+                    getMvpView().showContactsEmpty();
+                } else {
+                    getMvpView().showContacts(contacts);
+                }
+
+            }
+        });
     }
 }
 
