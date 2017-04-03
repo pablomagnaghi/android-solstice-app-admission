@@ -97,6 +97,7 @@ public class ContactDetailsActivity extends BaseActivity implements ContactDetai
     public void onBackPressed() {
         super.onBackPressed();
         overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right);
+        NavUtils.navigateUpFromSameTask(this);
     }
 
     /** MVP View methods implementation **/

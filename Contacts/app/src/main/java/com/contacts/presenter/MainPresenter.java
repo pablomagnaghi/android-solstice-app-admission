@@ -15,7 +15,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import rx.Observable;
-import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainPresenter extends BasePresenter<MainMvpView> {
 
@@ -42,23 +43,17 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
     public void loadContactsApi() {
         Observable<List<Contact>> contactsObservable = mApiClient.getClient().create(ApiInterface.class).getContacts();
 
-        addSubscription(contactsObservable, new Subscriber<List<Contact>>() {
-            @Override
-            public void onCompleted() {
+        addSubscription(contactsObservable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe((List<Contact> contacts) -> showContacts(contacts),
+                        (error) -> getMvpView().showError(),
+                        () -> {}));
+    }
 
-            }
-
-            @Override
-            public void onError(Throwable e) {
-                getMvpView().showError();
-            }
-
-            @Override
-            public void onNext(List<Contact> contacts) {
-                mContacts = contacts;
-                getMvpView().showContacts(contacts);
-            }
-        });
+    private void showContacts(List<Contact> contacts) {
+        mContacts = contacts;
+        getMvpView().showContacts(contacts);
     }
 
     public void saveState(Bundle savedInstanceState) {

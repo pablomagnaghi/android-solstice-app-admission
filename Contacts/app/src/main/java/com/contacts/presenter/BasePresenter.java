@@ -2,10 +2,7 @@ package com.contacts.presenter;
 
 import com.contacts.view.MvpView;
 
-import rx.Observable;
-import rx.Subscriber;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
+import rx.Subscription;
 import rx.subscriptions.CompositeSubscription;
 
 public class BasePresenter<T extends MvpView> implements Presenter<T> {
@@ -24,14 +21,11 @@ public class BasePresenter<T extends MvpView> implements Presenter<T> {
         onUnsubscribe();
     }
 
-    protected void addSubscription(Observable observable, Subscriber subscriber) {
+    protected void addSubscription(Subscription s) {
         if (mCompositeSubscription == null) {
             mCompositeSubscription = new CompositeSubscription();
         }
-        mCompositeSubscription.add(observable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(subscriber));
+        mCompositeSubscription.add(s);
     }
 
     private void onUnsubscribe() {

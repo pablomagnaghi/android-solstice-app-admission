@@ -15,5 +15,4 @@ public class BaseActivity extends AppCompatActivity {
     protected ApplicationComponent getApplicationComponent() {
         return ((ContactsApplication) getApplication()).getApplicationComponent();
     }
-
 }

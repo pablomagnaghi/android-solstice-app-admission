@@ -95,12 +95,8 @@ public class ContactsAdapter extends RecyclerView.Adapter<ContactsAdapter.Contac
             if (contact.hasPhone()) {
                 phoneTextView.setText(contact.getDefaultPhone());
             }
-            itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mViewClickSubject.onNext(contact);
-                }
-            });
+
+            itemView.setOnClickListener(v -> mViewClickSubject.onNext(contact));
         }
     }
 }

@@ -45,11 +45,11 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         ButterKnife.bind(this);
         getApplicationComponent().inject(this);
 
-        mContactsAdapter.getViewClickedObservable().subscribeOn(Schedulers.newThread())
+        mContactsAdapter.getViewClickedObservable()
+                .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(contact -> navigate(contact)
-                ).subscribe();
-
+                .doOnNext(contact -> navigateToDetails(contact))
+                .subscribe();
 
         mRecyclerView.setAdapter(mContactsAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -58,18 +58,12 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         mMainPresenter.attachView(this);
         mMainPresenter.restoreState(savedInstanceState);
 
-        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mContactsAdapter.clear();
-                mMainPresenter.loadContactsApi();
-            }
-        });
+        mSwipeRefresh.setOnRefreshListener(() -> mMainPresenter.loadContactsApi());
     }
 
-    private void navigate(Contact contact)
+    private void navigateToDetails(Contact contact)
     {
-        final Intent intent = new Intent(this, ContactDetailsActivity.class);
+        Intent intent = new Intent(this, ContactDetailsActivity.class);
         intent.putExtra(Constants.CONTACT_INTENT, contact);
         startActivity(intent);
     }
