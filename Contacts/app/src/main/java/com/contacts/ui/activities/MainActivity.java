@@ -70,7 +70,6 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     private void navigate(Contact contact)
     {
         final Intent intent = new Intent(this, ContactDetailsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(Constants.CONTACT_INTENT, contact);
         startActivity(intent);
     }
