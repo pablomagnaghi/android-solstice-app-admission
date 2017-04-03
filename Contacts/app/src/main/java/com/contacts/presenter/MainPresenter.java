@@ -1,6 +1,7 @@
 package com.contacts.presenter;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 
 import com.contacts.model.Contact;
 import com.contacts.rest.ApiClient;
@@ -8,6 +9,7 @@ import com.contacts.rest.ApiInterface;
 import com.contacts.utils.Constants;
 import com.contacts.view.MainMvpView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,21 +25,15 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
     @Inject
     public MainPresenter(ApiClient apiClient) {
         mApiClient = apiClient;
+        mContacts = new ArrayList<Contact>();
     }
 
-    public void loadContacts(Bundle savedInstanceState) {
+    public void restoreState(Bundle savedInstanceState) {
         checkViewAttached();
 
         if (savedInstanceState != null) {
             mContacts = savedInstanceState.getParcelableArrayList(Constants.CONTACTS);
-        }
-
-        if (mContacts != null) {
-            if (mContacts.isEmpty()) {
-                getMvpView().showContactsEmpty();
-            } else {
-                getMvpView().showContacts(mContacts);
-            }
+            getMvpView().showContacts(mContacts);
         } else {
             loadContactsApi();
         }
@@ -59,14 +55,13 @@ public class MainPresenter extends BasePresenter<MainMvpView> {
 
             @Override
             public void onNext(List<Contact> contacts) {
-                if (contacts.isEmpty()) {
-                    getMvpView().showContactsEmpty();
-                } else {
-                    getMvpView().showContacts(contacts);
-                }
-
+                mContacts = contacts;
+                getMvpView().showContacts(contacts);
             }
         });
     }
-}
 
+    public void saveState(Bundle savedInstanceState) {
+        savedInstanceState.putParcelableArrayList(Constants.CONTACTS, (ArrayList<? extends Parcelable>) mContacts);
+    }
+}

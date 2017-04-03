@@ -1,7 +1,7 @@
 package com.contacts.ui.activities;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,6 @@ import com.contacts.utils.Constants;
 import com.contacts.utils.DialogFactory;
 import com.contacts.view.MainMvpView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -23,6 +22,8 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 public class MainActivity extends BaseActivity implements MainMvpView {
 
@@ -30,8 +31,6 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     MainPresenter mMainPresenter;
     @Inject
     ContactsAdapter mContactsAdapter;
-
-    List<Contact> mContacts;
 
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
@@ -46,12 +45,18 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         ButterKnife.bind(this);
         getApplicationComponent().inject(this);
 
+        mContactsAdapter.getViewClickedObservable().subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(contact -> navigate(contact)
+                ).subscribe();
+
+
         mRecyclerView.setAdapter(mContactsAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mRecyclerView.setItemAnimator(new SlideInUpAnimator());
 
         mMainPresenter.attachView(this);
-        mMainPresenter.loadContacts(savedInstanceState);
+        mMainPresenter.restoreState(savedInstanceState);
 
         mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -62,10 +67,18 @@ public class MainActivity extends BaseActivity implements MainMvpView {
         });
     }
 
+    private void navigate(Contact contact)
+    {
+        final Intent intent = new Intent(this, ContactDetailsActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(Constants.CONTACT_INTENT, contact);
+        startActivity(intent);
+    }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList(Constants.CONTACTS, (ArrayList<? extends Parcelable>) mContacts);
+        mMainPresenter.saveState(outState);
     }
 
     @Override
@@ -79,17 +92,11 @@ public class MainActivity extends BaseActivity implements MainMvpView {
     @Override
     public void showContacts(List<Contact> contacts) {
         mSwipeRefresh.setRefreshing(false);
-        mContacts = contacts;
         mContactsAdapter.setContacts(contacts);
         mContactsAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void showContactsEmpty() {
-        mSwipeRefresh.setRefreshing(false);
-        mContactsAdapter.clear();
-        mContactsAdapter.notifyDataSetChanged();
-        Toast.makeText(this, R.string.empty_contacts, Toast.LENGTH_LONG).show();
+        if (contacts.isEmpty()) {
+            Toast.makeText(this, R.string.empty_contacts, Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
