@@ -100,6 +100,13 @@ public class ContactDetailsActivity extends BaseActivity implements ContactDetai
         NavUtils.navigateUpFromSameTask(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mContactDetailsPresenter.detachView();
+    }
+
+
     /** MVP View methods implementation **/
 
     @Override
